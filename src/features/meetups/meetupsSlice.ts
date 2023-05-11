@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import uuid from "react-native-uuid";
+import { MeetupItem } from "../../screens/AllMeetups";
 
-const initialState = [
+const initialState: MeetupItem[] = [
   {
     id: uuid.v4().toString(),
     title: "First Demo",
@@ -25,9 +26,17 @@ const meetupsSlice = createSlice({
     meetupAdded: (state, action) => {
       state.push(action.payload);
     },
+    meetupToggleFavorite: (state, action) => {
+      state.forEach((meetupLocation) => {
+        if (meetupLocation.id === action.payload) {
+          const currentFavoriteValue = meetupLocation.favorite;
+          meetupLocation.favorite = !currentFavoriteValue;
+        }
+      });
+    },
   },
 });
 
-export const { meetupAdded } = meetupsSlice.actions;
+export const { meetupAdded, meetupToggleFavorite } = meetupsSlice.actions;
 
 export default meetupsSlice.reducer;

@@ -9,6 +9,12 @@ import { Modal } from "react-native";
 import MeetupForm from "./MeetupForm";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MeetupStackParamList } from "../routes/MeetupStack";
+import { useDispatch, useSelector } from "react-redux";
+import { store } from "../store";
+import {
+  meetupAdded,
+  meetupToggleFavorite,
+} from "../features/meetups/meetupsSlice";
 
 // An interface that describes the type of props that `AllMeetups` component accepts. In this case: a single prop called `navigation` which is a StackNavigationProp object of a particular shape
 interface AllMeetupsProps {
@@ -29,25 +35,13 @@ export interface MeetupItem extends MeetupItemWithoutIdAndFav {
   favorite: boolean;
 }
 
+// TODO
+type RootState = ReturnType<typeof store.getState>;
+
 // Enforcing that the props we get are of the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
-  // `locations` will be an array of `MeetupItem` objects
-  const [locations, setLocations] = useState<MeetupItem[]>([
-    {
-      id: uuid.v4().toString(),
-      title: "First Demo",
-      address: "Meetupstr 1, 1000 MeetupCity",
-      description: "Great meetup place which you shouldn't miss!",
-      favorite: false,
-    },
-    {
-      id: uuid.v4().toString(),
-      title: "Second Demo",
-      address: "Meetupstr 2, 1000 MeetupCity",
-      description: "I would go there if I was you.",
-      favorite: false,
-    },
-  ]);
+  const locations = useSelector((state: RootState) => state.meetups);
+  const dispatch = useDispatch();
 
   // The `location` parameter will be of type `MeetupItemWithoutIdAndFav`
   const addLocation = (location: MeetupItemWithoutIdAndFav) => {
@@ -64,13 +58,13 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
       );
       return;
     }
-
-    setLocations((prev) => {
-      return [
-        ...prev,
-        { ...location, id: uuid.v4().toString(), favorite: false },
-      ];
-    });
+    dispatch(
+      meetupAdded({
+        ...location,
+        id: uuid.v4().toString(),
+        favorite: false,
+      })
+    );
   };
 
   // The type for `modalVisible` is inferred, so it is not necessary to write: `useState<boolean>(false)`
@@ -81,13 +75,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
   };
 
   const toggleFavorite = (id: string) => {
-    const updatedLocations = locations.map((location) => {
-      if (location.id === id) {
-        return { ...location, favorite: !location.favorite };
-      }
-      return location;
-    });
-    setLocations(updatedLocations);
+    dispatch(meetupToggleFavorite(id));
   };
 
   return (
