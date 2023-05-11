@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { store } from "../store";
 import {
   meetupAdded,
+  meetupRemoved,
   meetupToggleFavorite,
 } from "../features/meetups/meetupsSlice";
 
@@ -78,6 +79,10 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
     dispatch(meetupToggleFavorite(id));
   };
 
+  const removeLocation = (id: string) => {
+    dispatch(meetupRemoved(id));
+  };
+
   return (
     <View style={globalStyles.container}>
       <Modal visible={modalVisible}>
@@ -96,20 +101,34 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
         data={locations}
         renderItem={({ item }) => (
           <Card>
-            <Text>{item.title}</Text>
-            <View style={styles.iconsContainer}>
-              <Ionicons
-                name="information-circle"
-                size={24}
-                color="cornflowerblue"
-                onPress={() => goToDetails(item)}
-              />
-              <Ionicons
-                name={item.favorite ? "heart-outline" : "heart-dislike-outline"}
-                size={24}
-                color="indianred"
-                onPress={() => toggleFavorite(item.id)}
-              />
+            <View style={styles.cardContainer}>
+              <View style={styles.titleInfoContainer}>
+                <Text>{item.title}</Text>
+                <View style={styles.iconsContainer}>
+                  <Ionicons
+                    name="information-circle"
+                    size={24}
+                    color="cornflowerblue"
+                    onPress={() => goToDetails(item)}
+                  />
+                  <Ionicons
+                    name={
+                      item.favorite ? "heart-outline" : "heart-dislike-outline"
+                    }
+                    size={24}
+                    color="indianred"
+                    onPress={() => toggleFavorite(item.id)}
+                  />
+                </View>
+              </View>
+              <View style={styles.trashContainer}>
+                <Ionicons
+                  name="trash"
+                  size={24}
+                  color="black"
+                  onPress={() => removeLocation(item.id)}
+                />
+              </View>
             </View>
           </Card>
         )}
@@ -147,6 +166,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconsContainer: {
+    flex: 1,
     flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  cardContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  titleInfoContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  trashContainer: {
+    flex: 0,
   },
 });

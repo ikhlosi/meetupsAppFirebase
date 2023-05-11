@@ -34,9 +34,13 @@ const meetupsSlice = createSlice({
         }
       });
     },
+    meetupRemoved: (state, action) => {
+      return state.filter((location) => location.id !== action.payload);
+    },
   },
 });
 
-export const { meetupAdded, meetupToggleFavorite } = meetupsSlice.actions;
+export const { meetupAdded, meetupToggleFavorite, meetupRemoved } =
+  meetupsSlice.actions;
 
 export default meetupsSlice.reducer;
