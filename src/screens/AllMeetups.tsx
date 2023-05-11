@@ -10,22 +10,28 @@ import MeetupForm from "./MeetupForm";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MeetupStackParamList } from "../routes/MeetupStack";
 
-type AllMeetupsProps = {
+// An interface that describes the type of props that `AllMeetups` component accepts. In this case: a single prop called `navigation` which is a StackNavigationProp object of a particular shape
+interface AllMeetupsProps {
+  // `MeetupStackParamList` is the type that describes the parameters for the `MeetupStack` navigator, while "AllMeetups" is the name of the screen in the stack navigator
   navigation: StackNavigationProp<MeetupStackParamList, "AllMeetups">;
-};
+}
 
+// The type of a Meetup item, without the `id` and `favorite` properties
 export interface MeetupItemWithoutIdAndFav {
   title: string;
   address: string;
   description: string;
 }
 
+// The type of a Meetup item
 export interface MeetupItem extends MeetupItemWithoutIdAndFav {
   id: string;
   favorite: boolean;
 }
 
+// Enforcing that the props we get are of the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
+  // `locations` will be an array of `MeetupItem` objects
   const [locations, setLocations] = useState<MeetupItem[]>([
     {
       id: uuid.v4().toString(),
@@ -43,6 +49,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
     },
   ]);
 
+  // The `location` parameter will be of type `MeetupItemWithoutIdAndFav`
   const addLocation = (location: MeetupItemWithoutIdAndFav) => {
     setModalVisible(false);
     if (locations.some((loc) => loc.address === location.address)) {
@@ -66,6 +73,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
     });
   };
 
+  // The type for `modalVisible` is inferred, so it is not necessary to write: `useState<boolean>(false)`
   const [modalVisible, setModalVisible] = useState(false);
 
   const goToDetails = (item: MeetupItem) => {

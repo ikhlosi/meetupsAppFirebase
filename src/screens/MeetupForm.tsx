@@ -12,6 +12,7 @@ const locationSchema = yup.object({
   description: yup.string().required().min(8),
 });
 
+// `MeetupForm` expects a single prop `addLocation` which is a function which takes a `MeetupItemWithoutIdAndFav` object as parameter and has a void return type
 const MeetupForm = ({
   addLocation,
 }: {
@@ -35,7 +36,7 @@ const MeetupForm = ({
           <View style={styles.formContainer}>
             {Object.keys(values).map((value, i) => {
               return (
-                <View style={styles.inputContainer}>
+                <View style={styles.inputContainer} key={i}>
                   <Text style={styles.error}>
                     {touched[value as keyof typeof touched] &&
                       errors[value as keyof typeof errors]}
@@ -49,7 +50,6 @@ const MeetupForm = ({
                       styles.input,
                       { minHeight: value === "description" ? 80 : undefined },
                     ]}
-                    key={i}
                     multiline={value === "description" ? true : false}
                   />
                 </View>
