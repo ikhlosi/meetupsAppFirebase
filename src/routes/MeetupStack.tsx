@@ -3,12 +3,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AllMeetups, { MeetupItem } from "../screens/AllMeetups";
 import MeetupDetails from "../screens/MeetupDetails";
 import Header from "../shared/Header";
+import { ParamListBase } from "@react-navigation/native";
 
-export type MeetupStackParamList = {
+export interface MeetupStackParamList extends ParamListBase {
   AllMeetups: undefined;
   // MeetupDetails screen will take an object `{item: <item object>}` as prop; in other words: an object with property `item` and with value: the item object we want to pass down. This will be enforced in the `navigation.navigate()` function. <item object> must be of type `MeetupItem`
   MeetupDetails: { item: MeetupItem };
-};
+}
 
 const Stack = createStackNavigator<MeetupStackParamList>();
 
