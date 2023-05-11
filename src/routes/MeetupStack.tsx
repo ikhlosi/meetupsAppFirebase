@@ -6,6 +6,7 @@ import Header from "../shared/Header";
 
 export type MeetupStackParamList = {
   AllMeetups: undefined;
+  // MeetupDetails screen will take an object `{item: <item object>}` as prop; in other words: an object with property `item` and with value: the item object we want to pass down. This will be enforced in the `navigation.navigate()` function. <item object> must be of type `MeetupItem`
   MeetupDetails: { item: MeetupItem };
 };
 
