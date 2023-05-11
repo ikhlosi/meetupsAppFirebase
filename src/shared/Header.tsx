@@ -3,14 +3,11 @@ import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { ImageBackground } from "react-native";
 import { StatusBar } from "react-native";
-import { useSelector } from "react-redux";
-import { store } from "../store";
-
-// TODO
-type RootState = ReturnType<typeof store.getState>;
+import { useAppSelector } from "../hooks";
 
 const Header = ({ title }: HeaderProps) => {
-  const locations = useSelector((state: RootState) => state.meetups);
+  // `state` will be correctly typed, thanks to our custom hook
+  const locations = useAppSelector((state) => state.meetups);
 
   return (
     <ImageBackground
@@ -47,7 +44,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerTitle: {
-    // height: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

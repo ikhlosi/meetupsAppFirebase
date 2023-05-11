@@ -1,9 +1,10 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import AllMeetups, { MeetupItem } from "../screens/AllMeetups";
+import AllMeetups from "../screens/AllMeetups";
 import MeetupDetails from "../screens/MeetupDetails";
 import Header from "../shared/Header";
 import { ParamListBase } from "@react-navigation/native";
+import { MeetupItem } from "../features/meetups/meetupsSlice";
 
 export interface MeetupStackParamList extends ParamListBase {
   AllMeetups: undefined;

@@ -1,6 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import uuid from "react-native-uuid";
-import { MeetupItem } from "../../screens/AllMeetups";
+import { MeetupItemWithoutIdAndFav } from "../../screens/AllMeetups";
+
+// The type of a Meetup item
+export interface MeetupItem extends MeetupItemWithoutIdAndFav {
+  id: string;
+  favorite: boolean;
+}
 
 const initialState: MeetupItem[] = [
   {
@@ -23,18 +29,18 @@ const meetupsSlice = createSlice({
   name: "meetups",
   initialState,
   reducers: {
-    meetupAdded: (state, action) => {
+    // Specifying the type of the payload (by specifying the type of `action`)
+    meetupAdded: (state, action: PayloadAction<MeetupItem>) => {
       state.push(action.payload);
     },
-    meetupToggleFavorite: (state, action) => {
-      state.forEach((meetupLocation) => {
+    meetupToggleFavorite: (state, action: PayloadAction<string>) =>
+      state.map((meetupLocation) => {
         if (meetupLocation.id === action.payload) {
-          const currentFavoriteValue = meetupLocation.favorite;
-          meetupLocation.favorite = !currentFavoriteValue;
+          return { ...meetupLocation, favorite: !meetupLocation.favorite };
         }
-      });
-    },
-    meetupRemoved: (state, action) => {
+        return meetupLocation;
+      }),
+    meetupRemoved: (state, action: PayloadAction<string>) => {
       return state.filter((location) => location.id !== action.payload);
     },
   },

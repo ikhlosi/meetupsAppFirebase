@@ -9,15 +9,15 @@ import { Modal } from "react-native";
 import MeetupForm from "./MeetupForm";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MeetupStackParamList } from "../routes/MeetupStack";
-import { useDispatch, useSelector } from "react-redux";
-import { store } from "../store";
 import {
+  MeetupItem,
   meetupAdded,
   meetupRemoved,
   meetupToggleFavorite,
 } from "../features/meetups/meetupsSlice";
+import { useAppDispatch, useAppSelector } from "../hooks";
 
-// An interface that describes the type of props that `AllMeetups` component accepts. In this case: a single prop called `navigation` which is a StackNavigationProp object of a particular shape
+// Typing the props of AllMeetups component
 interface AllMeetupsProps {
   // `MeetupStackParamList` is the type that describes the parameters for the `MeetupStack` navigator, while "AllMeetups" is the name of the screen in the stack navigator
   navigation: StackNavigationProp<MeetupStackParamList, "AllMeetups">;
@@ -30,21 +30,13 @@ export interface MeetupItemWithoutIdAndFav {
   description: string;
 }
 
-// The type of a Meetup item
-export interface MeetupItem extends MeetupItemWithoutIdAndFav {
-  id: string;
-  favorite: boolean;
-}
-
-// TODO
-type RootState = ReturnType<typeof store.getState>;
-
-// Enforcing that the props we get are of the above defined type `AllMeetupsProps`
+// Typing the props with the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
-  const locations = useSelector((state: RootState) => state.meetups);
-  const dispatch = useDispatch();
+  // The `state` arg will be correctly typed thanks to our custom hook
+  const locations = useAppSelector((state) => state.meetups);
 
-  // The `location` parameter will be of type `MeetupItemWithoutIdAndFav`
+  const dispatch = useAppDispatch();
+
   const addLocation = (location: MeetupItemWithoutIdAndFav) => {
     setModalVisible(false);
     if (locations.some((loc) => loc.address === location.address)) {
