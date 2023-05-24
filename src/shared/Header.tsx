@@ -1,13 +1,35 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { ImageBackground } from "react-native";
 import { StatusBar } from "react-native";
-import { useAppSelector } from "../hooks";
+import { MeetupItem } from "../screens/AllMeetups";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Header = ({ title }: HeaderProps) => {
-  // `state` will be correctly typed, thanks to our custom hook
-  const locations = useAppSelector((state) => state.meetups);
+  const [locations, setLocations] = useState<MeetupItem[]>([]);
+  useEffect(() => {
+    const dbRef = collection(db, "locations");
+
+    const unsubscribe = onSnapshot(
+      dbRef,
+      (qs) =>
+        setLocations(
+          qs.docs.map(
+            (doc) =>
+              ({
+                id: doc.id,
+                ...doc.data(),
+              } as MeetupItem)
+          )
+        ),
+      (err) => {
+        console.error(`Error while fetching locations: ${err}`);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   return (
     <ImageBackground

@@ -1,5 +1,5 @@
 import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import Card from "../shared/Card";
@@ -10,12 +10,15 @@ import MeetupForm from "./MeetupForm";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MeetupStackParamList } from "../routes/MeetupStack";
 import {
-  MeetupItem,
-  meetupAdded,
-  meetupRemoved,
-  meetupToggleFavorite,
-} from "../features/meetups/meetupsSlice";
-import { useAppDispatch, useAppSelector } from "../hooks";
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 // Typing the props of AllMeetups component
 interface AllMeetupsProps {
@@ -29,15 +32,39 @@ export interface MeetupItemWithoutIdAndFav {
   address: string;
   description: string;
 }
+export interface MeetupItem extends MeetupItemWithoutIdAndFav {
+  id: string;
+  favorite: boolean;
+}
 
 // Typing the props with the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
-  // The `state` arg will be correctly typed thanks to our custom hook
-  const locations = useAppSelector((state) => state.meetups);
+  const [locations, setLocations] = useState<MeetupItem[]>([]);
 
-  const dispatch = useAppDispatch();
+  useEffect(() => {
+    // Get collection `meetups`
+    const dbRef = collection(db, "locations");
 
-  const addLocation = (location: MeetupItemWithoutIdAndFav) => {
+    const unsubscribe = onSnapshot(
+      dbRef,
+      (qs) =>
+        setLocations(
+          qs.docs.map(
+            (doc) =>
+              ({
+                id: doc.id,
+                ...doc.data(),
+              } as MeetupItem)
+          )
+        ),
+      (err) => {
+        console.error(`Error while fetching locations: ${err}`);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const addLocation = async (location: MeetupItemWithoutIdAndFav) => {
     setModalVisible(false);
     if (locations.some((loc) => loc.address === location.address)) {
       Alert.alert(
@@ -51,13 +78,10 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
       );
       return;
     }
-    dispatch(
-      meetupAdded({
-        ...location,
-        id: uuid.v4().toString(),
-        favorite: false,
-      })
-    );
+    const docRef = await addDoc(collection(db, "locations"), {
+      ...location,
+      favorite: false,
+    });
   };
 
   // The type for `modalVisible` is inferred, so it is not necessary to write: `useState<boolean>(false)`
@@ -67,12 +91,18 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
     navigation.navigate("MeetupDetails", { item: item });
   };
 
-  const toggleFavorite = (id: string) => {
-    dispatch(meetupToggleFavorite(id));
+  const toggleFavorite = async (id: string) => {
+    const docRef = doc(db, "locations", id);
+    const docSnapShot = await getDoc(docRef);
+    if (!docSnapShot.exists()) {
+      throw new Error("Document doesn't exist");
+    }
+    const meetupLocation = docSnapShot.data() as MeetupItem;
+    await updateDoc(docRef, { favorite: !meetupLocation.favorite });
   };
 
-  const removeLocation = (id: string) => {
-    dispatch(meetupRemoved(id));
+  const removeLocation = async (id: string) => {
+    await deleteDoc(doc(db, "locations", id));
   };
 
   return (
@@ -109,7 +139,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
                     }
                     size={24}
                     color="indianred"
-                    onPress={() => toggleFavorite(item.id)}
+                    onPress={async () => await toggleFavorite(item.id)} // TODO: maybe no async/await
                   />
                 </View>
               </View>
@@ -118,7 +148,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
                   name="trash"
                   size={24}
                   color="black"
-                  onPress={() => removeLocation(item.id)}
+                  onPress={async () => await removeLocation(item.id)} // TODO: maybe no async/await
                 />
               </View>
             </View>

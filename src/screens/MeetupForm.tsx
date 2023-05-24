@@ -12,18 +12,18 @@ const locationSchema = yup.object({
   description: yup.string().required().min(8),
 });
 
-// `MeetupForm` expects a single prop `addLocation` which is a function which takes a `MeetupItemWithoutIdAndFav` object as parameter and has a void return type
+// `MeetupForm` expects a single prop `addLocation` which is an asynchronous function which takes a `MeetupItemWithoutIdAndFav` object as parameter and returns a void Promise
 const MeetupForm = ({
   addLocation,
 }: {
-  addLocation: (location: MeetupItemWithoutIdAndFav) => void;
+  addLocation: (location: MeetupItemWithoutIdAndFav) => Promise<void>;
 }) => {
   return (
     <View style={globalStyles.container}>
       <Formik
         initialValues={{ title: "", address: "", description: "" }}
         validationSchema={locationSchema}
-        onSubmit={(values) => addLocation(values)}
+        onSubmit={async (values) => await addLocation(values)} // TODO: maybe remove async/await
       >
         {({
           handleChange,
