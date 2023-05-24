@@ -19,6 +19,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useAuthStateContext } from "../contexts/AuthUserProvider";
 
 // Typing the props of AllMeetups component
 interface AllMeetupsProps {
@@ -40,6 +41,8 @@ export interface MeetupItem extends MeetupItemWithoutIdAndFav {
 // Typing the props with the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
   const [locations, setLocations] = useState<MeetupItem[]>([]);
+
+  const { user } = useAuthStateContext();
 
   useEffect(() => {
     // Get collection `meetups`
@@ -157,14 +160,16 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
         keyExtractor={(item) => item.id}
         numColumns={2}
       />
-      <View style={styles.modalToggle}>
-        <Entypo
-          name="add-to-list"
-          size={24}
-          color="black"
-          onPress={() => setModalVisible(true)}
-        />
-      </View>
+      {!user?.isAnonymous && (
+        <View style={styles.modalToggle}>
+          <Entypo
+            name="add-to-list"
+            size={24}
+            color="black"
+            onPress={() => setModalVisible(true)}
+          />
+        </View>
+      )}
     </View>
   );
 };
