@@ -2,6 +2,7 @@ import "react-native-gesture-handler";
 import { Text } from "react-native";
 import { useFonts } from "expo-font";
 import TabNav from "./src/routes/TabNav";
+import RootNavigator from "./src/routes/RootNavigator";
 
 export default function App() {
   const [fontLoaded] = useFonts({
@@ -13,5 +14,5 @@ export default function App() {
     return <Text>Loading fonts...</Text>;
   }
 
-  return <TabNav />;
+  return <RootNavigator />;
 }
