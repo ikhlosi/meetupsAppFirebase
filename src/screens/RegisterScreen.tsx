@@ -5,47 +5,40 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../routes/AuthStack";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
+import { globalStyles } from "../styles/global";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const navigation: NavigationProp<AuthStackParamList> = useNavigation();
 
-  const handleRegister = () => {
-    if (name != "" && email != "" && password != "" && repeatPassword != "") {
-      if (password === repeatPassword) {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCreds) => {
-            console.log(
-              `userCreds: ${JSON.stringify(
-                userCreds
-              )}\nauth.currentUser: ${JSON.stringify(auth.currentUser)}`
-            );
-            if (!auth.currentUser) {
-              throw new Error("No currentUser!");
-            }
-            updateProfile(auth.currentUser, {
-              displayName: name,
-            })
-              .then(() => console.log("User registered!"))
-              .catch((err) => {
-                console.error(err);
-              });
-          })
-          .catch((err) => console.log(err));
+  const handleRegister = async () => {
+    if (
+      name &&
+      email &&
+      password &&
+      repeatPassword &&
+      password === repeatPassword
+    ) {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
 
-        // updateProfile(auth.currentUser, {
-        //   displayName: "Jane Q. User", photoURL: "https://example.com/jane-q-user/profile.jpg"
-        // }).then(() => {
-        //   // Profile updated!
-        //   // ...
-        // }).catch((error) => {
-        //   // An error occurred
-        //   // ...
-        // });
+        if (!auth.currentUser) {
+          throw new Error("No currentUser!");
+        }
+
+        await updateProfile(auth.currentUser, {
+          displayName: name,
+        });
+
+        console.log("User registered!");
+      } catch (err) {
+        console.error(err);
+        setShowError(true);
       }
     }
   };
@@ -68,16 +61,21 @@ const RegisterScreen = () => {
 
       <Input
         placeholder="Password"
+        secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
 
       <Input
         placeholder="Repeat password"
+        secureTextEntry
         value={repeatPassword}
         onChangeText={(text) => setRepeatPassword(text)}
       />
 
+      {showError && (
+        <Text style={globalStyles.errorText}>Could not register</Text>
+      )}
       <View style={styles.buttonView}>
         <Button
           titleStyle={{ fontSize: 14 }}
@@ -86,7 +84,7 @@ const RegisterScreen = () => {
           onPress={() => navigation.navigate("Login")}
         />
       </View>
-      <Button title="Register" onPress={() => handleRegister()} />
+      <Button title="Register" onPress={async () => await handleRegister()} />
     </View>
   );
 };

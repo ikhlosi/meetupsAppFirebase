@@ -1,7 +1,6 @@
 import "react-native-gesture-handler";
 import { Text } from "react-native";
 import { useFonts } from "expo-font";
-import TabNav from "./src/routes/TabNav";
 import RootNavigator from "./src/routes/RootNavigator";
 import AuthUserProvider from "./src/contexts/AuthUserProvider";
 

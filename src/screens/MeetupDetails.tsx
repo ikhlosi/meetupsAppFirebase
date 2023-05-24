@@ -6,9 +6,7 @@ import capitalizeFirstLetter from "../utils/capitalizeFirstLetter";
 import { RouteProp } from "@react-navigation/native";
 import { MeetupStackParamList } from "../routes/MeetupStack";
 
-// An interface that describes the type of props that MeetupDetails component accepts. In this case: a single prop called `route`, which has a particular shape defined by the `RouteProp` type
 interface MeetupDetailsProps {
-  // `MeetupStackParamList` is the type that describes the parameters for the `MeetupStack` navigator, while "MeetupDetails" is the name of the screen in the stack navigator
   route: RouteProp<MeetupStackParamList, "MeetupDetails">;
 }
 

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import Card from "../shared/Card";
-import uuid from "react-native-uuid";
 import { globalStyles } from "../styles/global";
 import { Modal } from "react-native";
 import MeetupForm from "./MeetupForm";
@@ -21,13 +20,10 @@ import {
 import { db } from "../firebase";
 import { useAuthStateContext } from "../contexts/AuthUserProvider";
 
-// Typing the props of AllMeetups component
 interface AllMeetupsProps {
-  // `MeetupStackParamList` is the type that describes the parameters for the `MeetupStack` navigator, while "AllMeetups" is the name of the screen in the stack navigator
   navigation: StackNavigationProp<MeetupStackParamList, "AllMeetups">;
 }
 
-// The type of a Meetup item, without the `id` and `favorite` properties
 export interface MeetupItemWithoutIdAndFav {
   title: string;
   address: string;
@@ -38,14 +34,12 @@ export interface MeetupItem extends MeetupItemWithoutIdAndFav {
   favorite: boolean;
 }
 
-// Typing the props with the above defined type `AllMeetupsProps`
 const AllMeetups = ({ navigation }: AllMeetupsProps) => {
   const [locations, setLocations] = useState<MeetupItem[]>([]);
 
   const { user } = useAuthStateContext();
 
   useEffect(() => {
-    // Get collection `meetups`
     const dbRef = collection(db, "locations");
 
     const unsubscribe = onSnapshot(
@@ -87,7 +81,6 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
     });
   };
 
-  // The type for `modalVisible` is inferred, so it is not necessary to write: `useState<boolean>(false)`
   const [modalVisible, setModalVisible] = useState(false);
 
   const goToDetails = (item: MeetupItem) => {
@@ -142,7 +135,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
                     }
                     size={24}
                     color="indianred"
-                    onPress={async () => await toggleFavorite(item.id)} // TODO: maybe no async/await
+                    onPress={async () => await toggleFavorite(item.id)}
                   />
                 </View>
               </View>
@@ -151,7 +144,7 @@ const AllMeetups = ({ navigation }: AllMeetupsProps) => {
                   name="trash"
                   size={24}
                   color="black"
-                  onPress={async () => await removeLocation(item.id)} // TODO: maybe no async/await
+                  onPress={async () => await removeLocation(item.id)}
                 />
               </View>
             </View>

@@ -11,4 +11,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 36,
     color: "cornflowerblue",
   },
+  errorText: {
+    color: "red",
+  },
 });

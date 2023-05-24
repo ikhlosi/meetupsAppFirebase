@@ -5,10 +5,12 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../routes/AuthStack";
 import { signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { globalStyles } from "../styles/global";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const navigation: NavigationProp<AuthStackParamList> = useNavigation();
 
@@ -18,7 +20,10 @@ const LoginScreen = () => {
         .then((userCredentials) => {
           console.log(userCredentials);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setShowError(true);
+        });
     }
   };
 
@@ -41,6 +46,10 @@ const LoginScreen = () => {
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
+
+      {showError && (
+        <Text style={globalStyles.errorText}>Invalid credentials</Text>
+      )}
 
       <View style={styles.buttonView}>
         <Button
