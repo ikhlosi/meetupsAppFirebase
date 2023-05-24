@@ -3,12 +3,28 @@ import React, { useState } from "react";
 import { Button, Input } from "@rneui/themed";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../routes/AuthStack";
+import { signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigation: NavigationProp<AuthStackParamList> = useNavigation();
+
+  const handleLogin = () => {
+    if (email != "" && password != "") {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredentials) => {
+          console.log(userCredentials);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const handleAnonymousLogin = () => {
+    signInAnonymously(auth).catch((err) => console.error(err));
+  };
 
   return (
     <View style={styles.container}>
@@ -21,6 +37,7 @@ const LoginScreen = () => {
 
       <Input
         placeholder="Password"
+        secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
@@ -33,7 +50,12 @@ const LoginScreen = () => {
           onPress={() => navigation.navigate("Register")}
         />
       </View>
-      <Button title="Login" />
+      <Button title="Login" onPress={() => handleLogin()} />
+      <Button
+        title="Use anonymously"
+        onPress={() => handleAnonymousLogin()}
+        color="secondary"
+      />
     </View>
   );
 };
