@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Input } from "@rneui/base";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../routes/AuthStack";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
 
 const RegisterScreen = () => {
@@ -18,8 +18,34 @@ const RegisterScreen = () => {
     if (name != "" && email != "" && password != "" && repeatPassword != "") {
       if (password === repeatPassword) {
         createUserWithEmailAndPassword(auth, email, password)
-          .then((userCreds) => console.log(userCreds))
+          .then((userCreds) => {
+            console.log(
+              `userCreds: ${JSON.stringify(
+                userCreds
+              )}\nauth.currentUser: ${JSON.stringify(auth.currentUser)}`
+            );
+            if (!auth.currentUser) {
+              throw new Error("No currentUser!");
+            }
+            updateProfile(auth.currentUser, {
+              displayName: name,
+            })
+              .then(() => console.log("User registered!"))
+              .catch((err) => {
+                console.error(err);
+              });
+          })
           .catch((err) => console.log(err));
+
+        // updateProfile(auth.currentUser, {
+        //   displayName: "Jane Q. User", photoURL: "https://example.com/jane-q-user/profile.jpg"
+        // }).then(() => {
+        //   // Profile updated!
+        //   // ...
+        // }).catch((error) => {
+        //   // An error occurred
+        //   // ...
+        // });
       }
     }
   };
