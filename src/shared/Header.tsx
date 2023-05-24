@@ -5,7 +5,9 @@ import { ImageBackground } from "react-native";
 import { StatusBar } from "react-native";
 import { MeetupItem } from "../screens/AllMeetups";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import { signOut } from "firebase/auth";
 
 const Header = ({ title }: HeaderProps) => {
   const [locations, setLocations] = useState<MeetupItem[]>([]);
@@ -31,6 +33,12 @@ const Header = ({ title }: HeaderProps) => {
     return () => unsubscribe();
   }, []);
 
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => console.log("logging out..."))
+      .catch((err) => console.log(err));
+  };
+
   return (
     <ImageBackground
       source={require("../../assets/background.jpg")}
@@ -52,6 +60,13 @@ const Header = ({ title }: HeaderProps) => {
           }, 0)}
         </Text>
       </View>
+      <SimpleLineIcons
+        name="logout"
+        size={24}
+        color="purple"
+        style={styles.logoutIcon}
+        onPress={() => handleLogout()}
+      />
     </ImageBackground>
   );
 };
@@ -82,6 +97,10 @@ const styles = StyleSheet.create({
   },
   favoriteContainer: {
     flexDirection: "row",
+  },
+  logoutIcon: {
+    alignSelf: "flex-end",
+    marginRight: 20,
   },
 });
 
